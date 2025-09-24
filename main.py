@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from collections import deque
 
 def parse_xml(xml_string):
     root = ET.fromstring(xml_string)
@@ -19,8 +20,6 @@ def get_depth(element):
     if len(element) == 0:
         return 1
     return 1 + max(get_depth(child) for child in element)
-
-from collections import deque
 
 def get_width(root):
     queue = deque([root])
@@ -45,8 +44,6 @@ def count_nodes_at_level(root, level):
         for child in node:
             queue.append((child, depth + 1))
     return count
-
-
 
 
 
