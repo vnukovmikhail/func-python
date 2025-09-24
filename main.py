@@ -91,6 +91,6 @@ if __name__ == '__main__':
                     case _:
                         print('Something going wrong...')
                 
-                input()
+                input('[PRESS ENTER FOR NEXT ACTIONS]')
     except FileNotFoundError as e:
         print(e)
