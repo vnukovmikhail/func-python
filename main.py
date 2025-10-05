@@ -1,249 +1,54 @@
-""" import xml.etree.ElementTree as ET
-from collections import deque
+from math import factorial
+from functools import reduce
 
-def parse_xml(xml_string):
-    root = ET.fromstring(xml_string)
-    return root
+# NUMBER 1
 
-def print_tree(element, level=0):
-    print('   ' * level + f'<{element.tag}>')
-    for child in element:
-        print_tree(child, level + 1)
+def squares_list(N):
+    return list(map(lambda x: x ** 2, range(1, N + 1)))
 
-def find_tag(root, tag_name):
-    return root.findall(f'.//{tag_name}')
-  
-def get_tag_list(elements):
-    return [el.text for el in elements if el.text]
-
-def get_depth(element):
-    if len(element) == 0:
-        return 1
-    return 1 + max(get_depth(child) for child in element)
-
-def get_width(root):
-    queue = deque([root])
-    max_width = 0
-
-    while queue:
-        level_size = len(queue)
-        max_width = max(max_width, level_size)
-        for _ in range(level_size):
-            node = queue.popleft()
-            queue.extend(node)
-    return max_width
-
-def count_nodes_at_level(root, level):
-    queue = deque([(root, 0)])
-    count = 0
-
-    while queue:
-        node, depth = queue.popleft()
-        if depth == level:
-            count += 1
-        for child in node:
-            queue.append((child, depth + 1))
-    return count
+def factorial_list(N):
+    return list(map(factorial, range(1, N + 1)))
 
 
 
-ACTIONS_LIST = '''
-/tree - to look tree of xml
-/tagl - find list of tags
-/tree_d - get tree depth
-/tree_w - get tree width
-/count_n - count nodes at level
+# NUMBER 2
 
-/exit - to quit
-'''
+def F1(x, n):
+    return x * n
+
+def F2(n):
+    return sum(map(lambda i: i, range(1, n + 1)))
+
+def F3(n):
+    return sum(map(lambda j: sum(range(1, j + 1)), range(1, n + 1)))
+
+# NUMBER 3
+
+def get_n_element(L, n):
+    return None if not L else (L[0] if n == 1 else get_n_element(L[1:], n - 1))
+
+def get_unique_lsit(L):
+    return reduce(lambda acc, x: acc if x in acc else acc + [x], L, [])
+
+def switch_couples(L):
+    if len(L) < 2:
+        return L
+    return [L[1], L[0]] + switch_couples(L[2:])
+
+def func_on_arrays(L1, L2, F):
+    if not L1 or not L2:
+        return []
+    return [F(L1[0], L2[0])] + func_on_arrays(L1[1:], L2[1:], F)
 
 if __name__ == '__main__':
-    xml_file = input('Write xml-file name: ')
-    try:
-        with open(xml_file, 'r', encoding='utf-8') as f:
-            xml_data = f.read()
-        
-        if xml_data:
-            root = parse_xml(xml_data)
-            while True:
-                print(ACTIONS_LIST)
-                action = input()
+    print('Squares:', squares_list(6))
+    print('Factorials:', factorial_list(6))
 
-                match action:
-                    case '/tree':
-                        print('XML Tree:')
-                        print_tree(root)
-                    case '/tagl':
-                        tag = input('Write tag to find: ')
-                        print('Tag list:', get_tag_list(find_tag(root, tag)))
-                    case '/tree_d':
-                        print('Tree depth: ', get_depth(root))
-                    case '/tree_w':
-                        print('Tree width', get_width(root))
-                    case '/count_n':
-                        level = int(input('Choose level to search: '))
-                        print(f'Nodes count at level {level}:', count_nodes_at_level(root, level))
-                    case '/exit':
-                        break
-                    case _:
-                        print('Something going wrong...')
-                
-                input('[PRESS ENTER FOR NEXT ACTIONS]')
-    except FileNotFoundError as e:
-        print(e)
- """
+    print('F1(3, 5) =', F1(3, 5))
+    print('F2(5) =', F2(5))
+    print('F3(3) =', F3(3))
 
-import xml.etree.ElementTree as ET
-from collections import deque
-
-
-def parse_xml(xml_string):
-    root = ET.fromstring(xml_string)
-    return root
-
-
-def print_tree(element, level=0):
-    print('   ' * level + f'<{element.tag}>')
-    for child in element:
-        print_tree(child, level + 1)
-
-
-# Changes
-##change of print_tree
-def get_tree_str(element, level=0):
-    lines = [' ' * level + f'<{element.tag}>']
-    for child in element:
-        lines.append(get_tree_str(child, level + 1))
-    return '\n'.join(lines)
-
-
-def find_tag(root, tag_name):
-    return root.findall(f'.//{tag_name}')
-
-
-def get_tag_list(elements):
-    return [el.text for el in elements if el.text]
-
-
-def get_depth(element):
-    if len(element) == 0:
-        return 1
-    return 1 + max(get_depth(child) for child in element)
-
-
-def get_width(root):
-    queue = deque([root])
-    max_width = 0
-
-    while queue:
-        level_size = len(queue)
-        max_width = max(max_width, level_size)
-        for _ in range(level_size):
-            node = queue.popleft()
-            queue.extend(node)
-    return max_width
-#Changes
-## use recursion
-def get_width(root):
-    def levels(nodes):
-        if not nodes:
-            return []
-        next_level = [child for node in nodes for child in node]
-        return [len(nodes)] + levels(next_level)
-    return max(levels([root]))
-
-def count_nodes_at_level(root, level):
-    queue = deque([(root, 0)])
-    count = 0
-
-    while queue:
-        node, depth = queue.popleft()
-        if depth == level:
-            count += 1
-        for child in node:
-            queue.append((child, depth + 1))
-    return count
-
-
-ACTIONS_LIST = '''
-/tree - to look tree of xml
-/tagl - find list of tags
-/tree_d - get tree depth
-/tree_w - get tree width
-/count_n - count nodes at level
-
-/exit - to quit
-'''
-
-
-# Changes
-## Instead of REPL, write a function that takes (state, action) -> (state, output)
-def process_action(root, action, args=None):
-    if action == '/tree':
-        return root, get_tree_str(root)
-    elif action == '/tagl':
-        tag = args or ''
-        return root, get_tag_list(find_tag(root, tag))
-    elif action == '/tree_d':
-        return root, get_depth(root)
-    # ...similar for others...
-    else:
-        return root, 'Unknown action'
-
-
-# Changes
-## IO should be separated, e.g. main() just orchestrates IO, not logic
-def main(xml_file, actions):
-    with open(xml_file, encoding='utf-8') as f:
-        xml_data = f.read()
-    root = parse_xml(xml_data)
-    results = []
-    for action, args in actions:
-        _, result = process_action(root, action, args)
-        results.append(result)
-    return results
-
-"""
- или даже как-то так записать
-actions = {
-    '/tagl': lambda tag: get_tag_list(find_tag(root, tag)),
-    '/tree_d': lambda: get_depth(root),
-    '/tree_w': lambda: get_width(root),
-    '/count_n': lambda level: count_nodes_at_level(root, level)
-}
-"""
-
-if __name__ == '__main__':
-    xml_file = input('Write xml-file name: ')
-    try:
-        with open(xml_file, 'r', encoding='utf-8') as f:
-            xml_data = f.read()
-
-        if xml_data:
-            root = parse_xml(xml_data)
-            while True:
-                print(ACTIONS_LIST)
-                action = input()
-
-                match action:
-                    case '/tree':
-                        print('XML Tree:')
-                        print_tree(root)
-                    case '/tagl':
-                        tag = input('Write tag to find: ')
-                        print('Tag list:', get_tag_list(find_tag(root, tag)))
-                    case '/tree_d':
-                        print('Tree depth: ', get_depth(root))
-                    case '/tree_w':
-                        print('Tree width', get_width(root))
-                    case '/count_n':
-                        level = int(input('Choose level to search: '))
-                        print(f'Nodes count at level {level}:', count_nodes_at_level(root, level))
-                    case '/exit':
-                        break
-                    case _:
-                        print('Something going wrong...')
-
-                input('[PRESS ENTER FOR NEXT ACTIONS]')
-    except FileNotFoundError as e:
-        print(e)
+    print('Third element:', get_n_element([10, 20, 30, 40, 50], 3))
+    print('Unique:', get_unique_lsit([1, 2, 2, 3, 1, 4, 3]))
+    print('Switch couples:', switch_couples([1, 2, 3, 4, 5, 6]))
+    print('Array summary:', func_on_arrays([1, 2, 3], [4, 5, 6], lambda x, y: x + y))
