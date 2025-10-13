@@ -1,54 +1,91 @@
-from math import factorial
-from functools import reduce
+import re
+from collections import Counter
 
-# NUMBER 1
+RESET = "\033[0m"
+RED = "\033[31m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+CYAN = "\033[36m"
 
-def squares_list(N):
-    return list(map(lambda x: x ** 2, range(1, N + 1)))
+def frequently_repeated_word(text):
+    words = re.findall(r'\b\w+\b', text.lower())
+    freq = Counter(words)
+    word, count = freq.most_common(1)[0]
+    print(f"Most common word: '{word}' (occurs {count} times)")
+    return word, count
 
-def factorial_list(N):
-    return list(map(factorial, range(1, N + 1)))
+
+
+def hash_text(text):
+    hash_val = 5381
+    for c in text:
+        hash_val = ((hash_val << 5) + hash_val) + ord(c)
+    return hash_val & 0xFFFFFFFF 
 
 
 
-# NUMBER 2
+def encoding_text(text, sdvig=3):
+    return ''.join(chr((ord(c) + sdvig) % 65536) for c in text)
 
-def F1(x, n):
-    return x * n
 
-def F2(n):
-    return sum(map(lambda i: i, range(1, n + 1)))
 
-def F3(n):
-    return sum(map(lambda j: sum(range(1, j + 1)), range(1, n + 1)))
+def decoding_text(text, sdvig=3):
+    return ''.join(chr((ord(c) - sdvig) % 65536) for c in text)
 
-# NUMBER 3
 
-def get_n_element(L, n):
-    return None if not L else (L[0] if n == 1 else get_n_element(L[1:], n - 1))
 
-def get_unique_lsit(L):
-    return reduce(lambda acc, x: acc if x in acc else acc + [x], L, [])
+def analize_text(text):
+    sentences = re.split(r'[.!?]+', text)
+    sentences = [s.strip() for s in sentences if s.strip()]
+    lengths = [len(re.findall(r'\b\w+\b', s)) for s in sentences]
+    if not sentences:
+        print("No offers found.")
+        return
+    avg = sum(lengths) / len(lengths)
+    longest = sentences[lengths.index(max(lengths))]
+    print(f"Average sentence length: {RESET}{GREEN}{avg:.2f} words{RESET}")
+    print(f"The longest sentence: '{longest}'")
+    return avg, longest
 
-def switch_couples(L):
-    if len(L) < 2:
-        return L
-    return [L[1], L[0]] + switch_couples(L[2:])
 
-def func_on_arrays(L1, L2, F):
-    if not L1 or not L2:
-        return []
-    return [F(L1[0], L2[0])] + func_on_arrays(L1[1:], L2[1:], F)
 
-if __name__ == '__main__':
-    print('Squares:', squares_list(6))
-    print('Factorials:', factorial_list(6))
+def statistics_of_text(text):
+    lines = text.splitlines()
+    words = re.findall(r'\b\w+\b', text)
+    chars = len(text)
+    unique_words = len(set(words))
+    print(f"Number of words: {RESET}{YELLOW}{len(words)}{RESET}")
+    print(f"Number of characters: {RESET}{YELLOW}{chars}{RESET}")
+    print(f"Number of lines: {RESET}{YELLOW}{len(lines)}{RESET}")
+    print(f"Unique words: {RESET}{YELLOW}{unique_words}{RESET}")
+    return len(words), chars, len(lines), unique_words
 
-    print('F1(3, 5) =', F1(3, 5))
-    print('F2(5) =', F2(5))
-    print('F3(3) =', F3(3))
 
-    print('Third element:', get_n_element([10, 20, 30, 40, 50], 3))
-    print('Unique:', get_unique_lsit([1, 2, 2, 3, 1, 4, 3]))
-    print('Switch couples:', switch_couples([1, 2, 3, 4, 5, 6]))
-    print('Array summary:', func_on_arrays([1, 2, 3], [4, 5, 6], lambda x, y: x + y))
+
+def sort_by_lines_length(text):
+    lines = text.splitlines()
+    sorted_lines = sorted(lines, key=len)
+    print("\nStrings sorted by length:")
+    for line in sorted_lines:
+        print(line)
+    return '\n'.join(sorted_lines)
+
+
+
+if __name__ == "__main__":
+    text_example = """Это пример текста.
+Текст используется для тестирования функций.
+Это простой текст для анализа возможностей редактора!
+петя петя петя это не петя а это э"""
+
+    frequently_repeated_word(text_example)
+    print("Text hash:", f"{RESET}{BLUE}{hash_text(text_example)}{RESET}")
+
+    coded = encoding_text(text_example)
+    decoded = decoding_text(coded)
+    print("Decoding is correct:", f"{RESET}{GREEN}{decoded == text_example}{RESET}")
+
+    analize_text(text_example)
+    statistics_of_text(text_example)
+    sort_by_lines_length(text_example)
